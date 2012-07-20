@@ -318,6 +318,18 @@ static int app_exec(struct ast_channel *chan, const char *data)
 	memset(tmp_exten, 0, 2);
 	memset(argv, 0, 3);
 
+	//Stuart Pittaway, no idea if this is a bug or not, but how does argv[0] get populated in dmsessions original ?
+        //With Asterisk 1.8 I just get 'requires text to speak' errors...
+        //The following few lines below do this..
+        char *tmpptr = ast_strdupa((char *)data);
+        int argc = ast_app_separate_args(tmpptr, ',', argv, ARRAY_LEN(argv));
+
+        if (argc==0) {
+                ast_log(LOG_WARNING, "%s requires at least 1 argument!\n", app);
+                return -1;
+        }
+
+
 	u = ast_module_user_add(chan);
 	text = argv[0];
 
